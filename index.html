@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>P2P</title>
+  </head>
+  <body>
+    <section>
+      <div>
+        <div>
+          <h1>P2P Example</h1><br>
+          <div><button id="start">Start</button>&nbsp;<button id="join">Join</button></div>
+        </div>
+      </div>
+    </section>
+    <section>
+    <div>
+       <label>Enter Message:</label><br/>
+       <textarea id="yourMessage"></textarea>
+       <button id="send">send</button>
+       <pre id="messages">Messages :</pre>
+    </div>
+    </section>
+    <script>
+
+      var peer = null
+      var peerId = null
+      var conn = null
+      var friend = {
+      		peerId: null
+      }
+
+      function initialize() {
+      		peer = new Peer('', {
+      			host: 'localhost',
+      			port: 9000,
+      			path: '/',
+      			debug: 3
+      		})
+      		peer.on('open', function(id) {
+      			peerId = id
+      		})
+      		peer.on('error', function(err) {
+      			alert(''+err)
+      		})
+
+      	}
+
+      	function start() {
+      		initialize()
+      		peer.on('open', function() {
+      			alert('Ask your friend to join using your peer ID: '+peerId)
+      		})
+      		peer.on('connection', function(c) {
+
+            document.getElementById('send').addEventListener('click', function () {
+            var yourMessage = document.getElementById('yourMessage').value
+            c.send(yourMessage)
+            console.log("Data Sent");
+          })
+
+            c.on('data', function (data) {
+                console.log("Data recieved");
+              document.getElementById('messages').textContent += data + '\n'
+          })
+      		})
+      	}
+
+      	function join() {
+      		initialize()
+      		peer.on('open', function() {
+      			var destId = prompt("Enter peer ID:")
+      			conn = peer.connect(destId, {
+      				reliable: true
+      			})
+      			conn.on('open', function() {
+      				friend.peerId = destId
+              document.getElementById('send').addEventListener('click', function () {
+              var yourMessage = document.getElementById('yourMessage').value
+              conn.send(yourMessage)
+              console.log("Data Sent");
+            })
+
+              conn.on('data', function (data) {
+                console.log("Data recieved");
+                document.getElementById('messages').textContent += data + '\n'
+            })
+      			})
+      		})
+      	}
+
+        document.getElementById('start').addEventListener('click', function () {
+    		start()
+    	})
+    	  document.getElementById('join').addEventListener('click', function () {
+    		join()
+    })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
+  </body>
+</html>
