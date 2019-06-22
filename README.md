@@ -37,5 +37,3 @@ Here, I have used port 9000, but you can change it to whatever you set the port 
 
 * **Atharv Sharma** - [Shod0w](https://github.com/Shod0w)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
